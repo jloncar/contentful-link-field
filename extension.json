@@ -1,0 +1,16 @@
+{
+  "id": "contentful-link-field",
+  "name": "Link",
+  "srcdoc": "./build/index.html",
+  "fieldTypes": ["Object"],
+  "parameters": {
+    "instance": [
+      {
+        "id": "linkableTypes",
+        "type": "Symbol",
+        "name": "Linkable types",
+        "description": "Comma-separated list of Content Type IDs that can be linked. Eg: `page,test-one,blog`"
+      }
+    ]
+  }
+}
