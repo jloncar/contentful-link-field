@@ -31,9 +31,10 @@ export class Item extends React.Component<ItemProps, ItemState> {
   }
 
   // Invoke when data is changed to persist it as json
-  onChange = async () => {
+  onChange = () => {
     this.props.onChange(this.state, this.props.idx)
   };
+
 
   // Functions below handle presentation layer and runtime extension state
   addInternal = async () => {
@@ -98,7 +99,7 @@ export class Item extends React.Component<ItemProps, ItemState> {
     if (!confirm) return;
 
     this.setState(
-      { ...this.state, label: '', referencedEntity: null, url: '', type: 'deleted' },
+      { ...this.state, type: 'deleted' },
       () => {
         this.onChange();
       }
@@ -215,9 +216,7 @@ export class Item extends React.Component<ItemProps, ItemState> {
 
   render = () => {
     if(this.state.type === 'deleted')
-    {
-      return null
-    }
+      return null;
     return (
       <>
         {this.state.type === 'internal' &&

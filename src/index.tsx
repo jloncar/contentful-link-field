@@ -12,7 +12,6 @@ interface AppProps {
 
 interface AppState {
   links: any[];
-  items: any[];
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -22,8 +21,7 @@ export class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      links: [],
-      items: []
+      links: []
     };
 
     this.min = 1;
@@ -35,61 +33,29 @@ export class App extends React.Component<AppProps, AppState> {
   detachExternalChangeHandler: Function | null = null;
 
   componentDidMount() {
-    console.log('AAA');
     this.props.sdk.window.startAutoResizer();
     // Handler for external field value changes (e.g. when multiple authors are working on the same entry).
     this.detachExternalChangeHandler = this.props.sdk.field.onValueChanged(this.onExternalChange);
   }
 
   onItemChange = (state: any, idx: number) => {
-    let links = [...this.state.links]
-    links[idx] = state
-    this.setState({links: links}, () => {
-      const value = links
-      this.props.sdk.field.setValue(value);
-      console.log('COMMITED', value);
-      console.log('STATS', this.state.links, this.state.items);
-    })
+    let links = [...this.state.links];
+    links[idx] = state;
+    this.props.sdk.field.setValue(links);
   };
 
   addItem(initState?: ItemState) {
-    console.log('ADD ITEM', initState);
-    const idx = this.state.items.length;
     const initS = initState ? initState : {};
-    const newItem = (
-      <Item
-        sdk={this.props.sdk}
-        initState={initS}
-        onChange={this.onItemChange}
-        key={idx}
-        idx={idx}
-      />
-    );
 
     this.setState({
-      items: [...this.state.items, newItem],
       links: [...this.state.links, initS]
     });
   }
 
   onExternalChange = (newLinks: any[]) => {
-    console.log('ON EXTERNAL CHANGE', newLinks);
-    if (!newLinks || newLinks.length === 0) return;
+    if (!newLinks || newLinks.length === 0) newLinks = [];
 
-    const items = newLinks.map(
-      (initS, idx) =>
-        initS && (
-          <Item
-            sdk={this.props.sdk}
-            initState={initS}
-            onChange={this.onItemChange}
-            key={idx}
-            idx={idx}
-          />
-        )
-    );
-    console.log("NEW ITEMS", items, "NEW LINKS", newLinks)
-    this.setState({ items: items, links: newLinks });
+    this.setState({ links: [...newLinks] });
   };
 
   componentWillUnmount() {
@@ -101,10 +67,18 @@ export class App extends React.Component<AppProps, AppState> {
   render = () => {
     return (
       <>
-        {this.state.items.length > 0 && this.state.items.map((It, i) => It)}
+        {this.state.links.map((state, i) => (
+          <Item
+            sdk={this.props.sdk}
+            initState={state}
+            onChange={this.onItemChange}
+            key={i}
+            idx={i}
+          />
+        ))}
 
         <TextLink icon="Plus" linkType="positive" onClick={this.addItem.bind(this, undefined)}>
-          Add Link
+          Add {this.state.links.length}
         </TextLink>
       </>
     );
