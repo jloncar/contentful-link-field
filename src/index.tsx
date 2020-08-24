@@ -72,11 +72,19 @@ export class App extends React.Component<AppProps, AppState> {
 
     if (!entity) return;
 
+    // Resolve URL
+    let url = ''
+    if("slug" in entity.fields)
+    {
+      url = (this.props.sdk.field.locale in entity.fields.slug) ? entity.fields.slug[this.props.sdk.field.locale] : entity.fields.slug[this.props.sdk.locales.default]
+    }
+
     this.setState(
       {
         ...this.state,
         referencedEntity: entity,
         label: entity.fields.title[this.props.sdk.locales.default],
+        url: url,
         type: 'internal'
       },
       () => {

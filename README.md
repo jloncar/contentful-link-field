@@ -19,7 +19,7 @@ Easily add Link field type to [Contentful](https://www.contentful.com/) with thi
 - Verify extension called `Link` is showing
 
 
-## Using it
+## How to use
 
 - In your Content Type editor, add `Object` field
 - Configure it as you like (multiple links and translations are ok), go to `Appearance` tab and click `Link`
@@ -30,3 +30,14 @@ Easily add Link field type to [Contentful](https://www.contentful.com/) with thi
 ## External Links
 
 ![GIF demo](./docs/demo-external.gif)
+
+
+## Data Structure
+````typescript
+interface AppState {
+    referencedEntity: any;
+    label: string;
+    url: string;
+    type: 'none' | 'internal' | 'external';
+}
+````
