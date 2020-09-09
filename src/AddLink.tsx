@@ -1,14 +1,12 @@
 import * as React from 'react';
-import {
-  TextLink
-} from '@contentful/forma-36-react-components';
+import { TextLink } from '@contentful/forma-36-react-components';
 import { IAddLinkProps } from './typings';
 const AddLink: React.FunctionComponent<IAddLinkProps> = ({
   sdk,
   linkableTypes,
+  allowAssets,
   onAdd
 }) => {
-
   const addInternal = async () => {
     const entity: any = await sdk.dialogs.selectSingleEntry({
       contentTypes: linkableTypes
@@ -17,11 +15,24 @@ const AddLink: React.FunctionComponent<IAddLinkProps> = ({
     if (!entity) return;
 
     onAdd({
-      type: "internal",
+      type: 'internal',
       url: entity.fields.slug[sdk.locales.default],
       label: entity.fields.title[sdk.locales.default]
-    })
-  }
+    });
+  };
+
+  const addAsset = async () => {
+    const entity: any = await sdk.dialogs.selectSingleAsset();
+    console.log(entity)
+
+    if (!entity) return;
+
+    onAdd({
+      type: 'external',
+      url: `https:${entity.fields.file[sdk.locales.default].url}`,
+      label: entity.fields.title[sdk.locales.default]
+    });
+  };
 
   const addExternal = async () => {
     const url = await sdk.dialogs.openPrompt({
@@ -33,11 +44,11 @@ const AddLink: React.FunctionComponent<IAddLinkProps> = ({
     if (!url) return;
 
     onAdd({
-      type: "external",
+      type: 'external',
       url: url,
       label: url
-    })
-  }
+    });
+  };
 
   return (
     <div>
@@ -48,6 +59,14 @@ const AddLink: React.FunctionComponent<IAddLinkProps> = ({
       <TextLink icon="ExternalLink" onClick={addExternal}>
         Add External Link
       </TextLink>
+      {allowAssets && (
+        <React.Fragment>
+          <span style={{ marginRight: '2rem' }}></span>
+          <TextLink icon="ExternalLink" onClick={addAsset}>
+            Add Asset Link
+          </TextLink>
+        </React.Fragment>
+      )}
     </div>
   );
 };

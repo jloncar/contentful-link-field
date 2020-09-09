@@ -29,11 +29,13 @@ interface ILinkListProps {
   max: number;
   items: ILink[];
   linkableTypes: string[]; // which content types can be linked (need slug field)
+  allowAssets: boolean; // Allow "Add Asset Link"?
   onChange: Function; // Set state
 }
 
 interface IAddLinkProps {
   sdk: FieldExtensionSDK;
   linkableTypes: string[]; // which content types can be linked (need slug field)
+  allowAssets: boolean; // Allow "Add Asset Link"?
   onAdd: Function; // Set state
 }

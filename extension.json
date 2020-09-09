@@ -10,6 +10,12 @@
         "type": "Symbol",
         "name": "Linkable types",
         "description": "Comma-separated list of Content Type IDs that can be linked. Eg: `page,test-one,blog`"
+      },
+      {
+        "id": "allowAssets",
+        "type": "Boolean",
+        "name": "Allow linking assets?",
+        "description": "If yes, Add Asset Link will show."
       }
     ]
   }

@@ -13,6 +13,7 @@ export class App extends React.Component<IAppProps, IAppState> {
   min = 0;
   max = 100;
   message = '';
+  allowAssets = false;
   linkableTypes: string[] = [];
   detachExternalChangeHandler: Function | null = null;
 
@@ -42,6 +43,9 @@ export class App extends React.Component<IAppProps, IAppState> {
     }
     // Normalize validations to min and max
     if (this.min === 0 && required === true) this.min = 1;
+
+    // Allow asset links?
+    this.allowAssets = (this.props.sdk.parameters.instance as any).allowAssets || false;
 
     // Extract linkable types
     const instanceParams: any = this.props.sdk.parameters.instance;
@@ -75,6 +79,7 @@ export class App extends React.Component<IAppProps, IAppState> {
         max={this.max}
         items={this.state.links}
         linkableTypes={this.linkableTypes}
+        allowAssets={this.allowAssets}
         onChange={this.onChangeInternal}
       />
     );

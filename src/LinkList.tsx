@@ -14,6 +14,7 @@ const LinkList: React.FunctionComponent<ILinkListProps> = ({
   min,
   max,
   linkableTypes,
+  allowAssets,
   onChange
 }) => {
   useEffect(() => {
@@ -100,7 +101,7 @@ const LinkList: React.FunctionComponent<ILinkListProps> = ({
       {items && items.length > 0 && renderMain()}
 
       <div style={{ marginTop: '2rem', paddingBottom: '4rem' }}>
-        {items.length < max && <AddLink sdk={sdk} linkableTypes={linkableTypes} onAdd={onAdd} />}
+        {items.length < max && <AddLink sdk={sdk} linkableTypes={linkableTypes} allowAssets={allowAssets} onAdd={onAdd} />}
       </div>
     </>
   );
