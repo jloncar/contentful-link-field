@@ -25,3 +25,5 @@ build/*
 .contentfulrc.json
 contentful-extension-scripts*
 *.code-workspace
+# Local Netlify folder
+.netlify

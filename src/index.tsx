@@ -74,7 +74,6 @@ export class App extends React.Component<IAppProps, IAppState> {
         min={this.min}
         max={this.max}
         items={this.state.links}
-        errorMessage={this.message}
         linkableTypes={this.linkableTypes}
         onChange={this.onChangeInternal}
       />

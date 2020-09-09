@@ -17,7 +17,7 @@ const LinkList: React.FunctionComponent<ILinkListProps> = ({
   onChange
 }) => {
   useEffect(() => {
-    if (items.length === 0) {
+    if (min > 0 && items.length === 0) {
       sdk.field.setInvalid(true);
     } else {
       sdk.field.setInvalid(false);
