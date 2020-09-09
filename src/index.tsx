@@ -1,62 +1,54 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { TextLink, EntryCard, Note } from '@contentful/forma-36-react-components';
 import { init, FieldExtensionSDK } from 'contentful-ui-extensions-sdk';
-import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
-import { Item, ItemState } from './item';
+import '@contentful/forma-36-react-components/dist/styles.css';
+import LinkList from './LinkList';
+import { IAppState, IAppProps, ILink } from './typings';
 
-interface AppProps {
-  sdk: FieldExtensionSDK;
-}
+// App: Handleovanje persistance-a i ucitavanja (prosledjivanje state-a wrapperu)
+// App: Ucitavnje parametara (sta moze da se linkuje, koliki su minimum i maximum, dal je required -- validacije)
 
-interface AppState {
-  links: any[];
-}
+export class App extends React.Component<IAppProps, IAppState> {
+  min = 0;
+  max = 100;
+  message = '';
+  linkableTypes: string[] = [];
+  detachExternalChangeHandler: Function | null = null;
 
-export class App extends React.Component<AppProps, AppState> {
-  min: number;
-  max: number;
-
-  constructor(props: AppProps) {
+  constructor(props: IAppProps) {
     super(props);
     this.state = {
       links: []
     };
-
-    this.min = 1;
-    this.max = 5;
   }
-
-  // Code below handles persistance, serialization and global events
-
-  detachExternalChangeHandler: Function | null = null;
 
   componentDidMount() {
     this.props.sdk.window.startAutoResizer();
-    // Handler for external field value changes (e.g. when multiple authors are working on the same entry).
-    this.detachExternalChangeHandler = this.props.sdk.field.onValueChanged(this.onExternalChange);
+    this.detachExternalChangeHandler = this.props.sdk.field.onValueChanged(this.onChange);
+
+    const required = this.props.sdk.field.required;
+    const validations = this.props.sdk.field.validations;
+
+    // Extract validation values
+    if (validations && validations.length > 0) {
+      for (let i = 0; i < validations.length; i++) {
+        if ('size' in validations[i]) {
+          this.message = (validations[i] as any).message || '';
+          this.min = (validations[i] as any).size.min;
+          this.max = (validations[i] as any).size.max;
+        }
+      }
+    }
+    // Normalize validations to min and max
+    if (this.min === 0 && required === true) this.min = 1;
+
+    // Extract linkable types
+    const instanceParams: any = this.props.sdk.parameters.instance;
+    this.linkableTypes = instanceParams.linkableTypes
+      ? instanceParams.linkableTypes.split(',')
+      : [];
   }
-
-  onItemChange = (state: any, idx: number) => {
-    let links = [...this.state.links];
-    links[idx] = state;
-    this.props.sdk.field.setValue(links);
-  };
-
-  addItem(initState?: ItemState) {
-    const initS = initState ? initState : {};
-
-    this.setState({
-      links: [...this.state.links, initS]
-    });
-  }
-
-  onExternalChange = (newLinks: any[]) => {
-    if (!newLinks || newLinks.length === 0) newLinks = [];
-
-    this.setState({ links: [...newLinks] });
-  };
 
   componentWillUnmount() {
     if (this.detachExternalChangeHandler) {
@@ -64,23 +56,28 @@ export class App extends React.Component<AppProps, AppState> {
     }
   }
 
+  onChange = (links: ILink[]) => {
+    if (!links || links.length === 0) links = [];
+    this.setState({ links: [...links] });
+  };
+
+  onChangeInternal = (links: ILink[]) => {
+    // Persist
+    // will "onChange" be inovked automatically to persist in state or nah?
+    this.props.sdk.field.setValue(links);
+  };
+
   render = () => {
     return (
-      <>
-        {this.state.links.map((state, i) => (
-          <Item
-            sdk={this.props.sdk}
-            initState={state}
-            onChange={this.onItemChange}
-            key={i}
-            idx={i}
-          />
-        ))}
-
-        <TextLink icon="Plus" linkType="positive" onClick={this.addItem.bind(this, undefined)}>
-          Add {this.state.links.length}
-        </TextLink>
-      </>
+      <LinkList
+        sdk={this.props.sdk}
+        min={this.min}
+        max={this.max}
+        items={this.state.links}
+        errorMessage={this.message}
+        linkableTypes={this.linkableTypes}
+        onChange={this.onChangeInternal}
+      />
     );
   };
 }
